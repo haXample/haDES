@@ -339,7 +339,7 @@ MapBit PROC C USES ebx edi esi edx      ; Maps a bit inBitField -> outBitField
 
                                         ; Map the value (CY) into outBitField
         lahf                            ; Save bit status from previous test
-        xor     ebx, ebx                        ; Init alignment to 1st DWORD
+        xor     ebx, ebx                ; Init alignment to 1st DWORD
         cmp     al, 32                  ; Check which DWORD the index points to.
         jb      @F                      ; Go and test the 1st
         mov     ebx, 4                  ; Advance to next DWORD boundary
@@ -368,7 +368,7 @@ MapBit ENDP
 ;       Description:
 ;         The following routine supports the permutation macros.
 ;         This routine is CPU dependent. The maximum entity of the Intel x86
-;         CPUs is 32 bits (DWORD). So we must do bit munipulations in chunks of
+;         CPUs is 32 bits (DWORD). So we must do bit manipulations in chunks of
 ;         32 bits when using the BT, BTR, BTS, ... instructions.
 ;
 ;         Note: inBitField positions at (-1) are not mapped, while the outBitField
@@ -385,7 +385,7 @@ MapBitMx_1:
         cmp     ah, (-1)                ; Skip (-1), for right justification, etc.
         je      MapBitMx_3              ; Don't map this outBitField position
 
-        xor     ebx, ebx                        ; Init alignment to 1st DWORD
+        xor     ebx, ebx                ; Init alignment to 1st DWORD
         cmp     ah, 32                  ; Check which DWORD the index points to.
         jb      @F                      ; Go and test the 1st
         mov     ebx, 4                  ; Advance to next DWORD boundary
@@ -395,7 +395,7 @@ MapBitMx_1:
 
                                         ; Map the value (CY) into outBitField
         lahf                            ; Save bit status from previous test
-        xor     ebx, ebx                        ; Init alignment to 1st DWORD
+        xor     ebx, ebx                ; Init alignment to 1st DWORD
 
         push    ax                      ; Save outBitField position
         xor     al, 07h                 ; Convert DES notation -> CPU convention
@@ -665,7 +665,7 @@ kinit ENDP
 ;         of the halves.
 ;
 ;         Note: Some implementations vary the DES and right-rotate the key.
-;               For these application just rewrite this routine to meet your
+;               For these applications just rewrite this routine to meet your
 ;               specific needs.
 ;
 ;
