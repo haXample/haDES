@@ -1,5 +1,5 @@
 ;; -------------------------------------------------------------------------
-;; Microsoft Visual Studio 2019
+;; Microsoft Visual Studio 2010 or 2019
 ;;
 ;;command line:  ml /nologo /c /Sn /Sg /Sp84 /Fl desbio.asm
 
@@ -339,7 +339,7 @@ MapBit PROC C USES ebx edi esi edx      ; Maps a bit inBitField -> outBitField
 
                                         ; Map the value (CY) into outBitField
         lahf                            ; Save bit status from previous test
-        xor     ebx, ebx                ; Init alignment to 1st DWORD
+        xor     ebx, ebx                        ; Init alignment to 1st DWORD
         cmp     al, 32                  ; Check which DWORD the index points to.
         jb      @F                      ; Go and test the 1st
         mov     ebx, 4                  ; Advance to next DWORD boundary
@@ -368,7 +368,7 @@ MapBit ENDP
 ;       Description:
 ;         The following routine supports the permutation macros.
 ;         This routine is CPU dependent. The maximum entity of the Intel x86
-;         CPUs is 32 bits (DWORD). So we must do bit manipulations in chunks of
+;         CPUs is 32 bits (DWORD). So we must do bit munipulations in chunks of
 ;         32 bits when using the BT, BTR, BTS, ... instructions.
 ;
 ;         Note: inBitField positions at (-1) are not mapped, while the outBitField
@@ -385,7 +385,7 @@ MapBitMx_1:
         cmp     ah, (-1)                ; Skip (-1), for right justification, etc.
         je      MapBitMx_3              ; Don't map this outBitField position
 
-        xor     ebx, ebx                ; Init alignment to 1st DWORD
+        xor     ebx, ebx                        ; Init alignment to 1st DWORD
         cmp     ah, 32                  ; Check which DWORD the index points to.
         jb      @F                      ; Go and test the 1st
         mov     ebx, 4                  ; Advance to next DWORD boundary
@@ -395,7 +395,7 @@ MapBitMx_1:
 
                                         ; Map the value (CY) into outBitField
         lahf                            ; Save bit status from previous test
-        xor     ebx, ebx                ; Init alignment to 1st DWORD
+        xor     ebx, ebx                        ; Init alignment to 1st DWORD
 
         push    ax                      ; Save outBitField position
         xor     al, 07h                 ; Convert DES notation -> CPU convention
@@ -455,15 +455,15 @@ MapBitMatrix ENDP
 ;
 InitialPermutation PROC C USES ebx edi esi
 
-        PERMUTATION_START               OFFSET L_Block, OFFSET outBitField
-        PERMUTATION_BIT_MATRIX          58, 50, 42, 34, 26, 18, 10, 2, \
-                                        60, 52, 44, 36, 28, 20, 12, 4, \
-                                        62, 54, 46, 38, 30, 22, 14, 6, \
-                                        64, 56, 48, 40, 32, 24, 16, 8, \
-                                        57, 49, 41, 33, 25, 17,  9, 1, \
-                                        59, 51, 43, 35, 27, 19, 11, 3, \
-                                        61, 53, 45, 37, 29, 21, 13, 5, \
-                                        63, 55, 47, 39, 31, 23, 15, 7
+        PERMUTATION_START       OFFSET L_Block, OFFSET outBitField
+        PERMUTATION_BIT_MATRIX  58,50,42,34,26,18,10,2, \
+                                60,52,44,36,28,20,12,4, \
+                                62,54,46,38,30,22,14,6, \
+                                64,56,48,40,32,24,16,8, \
+                                57,49,41,33,25,17, 9,1, \
+                                59,51,43,35,27,19,11,3, \
+                                61,53,45,37,29,21,13,5, \
+                                63,55,47,39,31,23,15,7
         PERMUTATION_END
 
 
@@ -508,15 +508,15 @@ InitialPermutation ENDP
 ;
 FinalPermutation PROC C USES ebx edi esi
 
-        PERMUTATION_START               OFFSET P_Block, OFFSET outBitField
-        PERMUTATION_BIT_MATRIX          40, 8, 48, 16, 56, 24, 64, 32, \
-                                        39, 7, 47, 15, 55, 23, 63, 31, \
-                                        38, 6, 46, 14, 54, 22, 62, 30, \
-                                        37, 5, 45, 13, 53, 21, 61, 29, \
-                                        36, 4, 44, 12, 52, 20, 60, 28, \
-                                        35, 3, 43, 11, 51, 19, 59, 27, \
-                                        34, 2, 42, 10, 50, 18, 58, 26, \
-                                        33, 1, 41,  9, 49, 17, 57, 25
+        PERMUTATION_START       OFFSET P_Block, OFFSET outBitField
+        PERMUTATION_BIT_MATRIX  40,8,48,16,56,24,64,32, \
+                                39,7,47,15,55,23,63,31, \
+                                38,6,46,14,54,22,62,30, \
+                                37,5,45,13,53,21,61,29, \
+                                36,4,44,12,52,20,60,28, \
+                                35,3,43,11,51,19,59,27, \
+                                34,2,42,10,50,18,58,26, \
+                                33,1,41, 9,49,17,57,25
         PERMUTATION_END
 
 
@@ -556,15 +556,15 @@ BuildPermutedChoice1 PROC C USES ebx esi edi
 ;
 ;  Create a 56-bit DES key of Permutation Choice 1 (PC-1)
 ;
-        PERMUTATION_START               OFFSET inBitField, OFFSET KeyBuf
-        PERMUTATION_BIT_MATRIX          57, 49, 41, 33, 25, 17,  9, \
-                                         1, 58, 50, 42, 34, 26, 18, \
-                                        10,  2, 59, 51, 43, 35, 27, \
-                                        19, 11,  3, 60, 52, 44, 36, \
-                                        63, 55, 47, 39, 31, 23, 15, \
-                                         7, 62, 54, 46, 38, 30, 22, \
-                                        14,  6, 61, 53, 45, 37, 29, \
-                                        21, 13,  5, 28, 20, 12,  4
+        PERMUTATION_START       OFFSET inBitField, OFFSET KeyBuf
+        PERMUTATION_BIT_MATRIX  57,49,41,33,25,17, 9, \
+                                 1,58,50,42,34,26,18, \
+                                10, 2,59,51,43,35,27, \
+                                19,11, 3,60,52,44,36, \
+                                63,55,47,39,31,23,15, \
+                                 7,62,54,46,38,30,22, \
+                                14, 6,61,53,45,37,29, \
+                                21,13, 5,28,20,12, 4
         PERMUTATION_END
 
         ret
@@ -631,15 +631,15 @@ BuildKey:                               ; Loop of the data Encrypt algorithm
 ; For simplification the macro permutes the key into the lower 6 bits
 ; of 8 bytes.
 ;
-        PERMUTATION_START               OFFSET KeyBuf, edi
-        PERMUTATION_BIT_MATRIX          , , 14, 17, 11, 24,  1,  5, \
-                                        , ,  3, 28, 15,  6, 21, 10, \
-                                        , , 23, 19, 12,  4, 26,  8, \
-                                        , , 16,  7, 27, 20, 13,  2, \
-                                        , , 41, 52, 31, 37, 47, 55, \
-                                        , , 30, 40, 51, 45, 33, 48, \
-                                        , , 44, 49, 39, 56, 34, 53, \
-                                        , , 46, 42, 50, 36, 29, 32
+        PERMUTATION_START       OFFSET KeyBuf, edi
+        PERMUTATION_BIT_MATRIX  , ,14,17,11,24, 1, 5, \
+                                , , 3,28,15, 6,21,10, \
+                                , ,23,19,12, 4,26, 8, \
+                                , ,16, 7,27,20,13, 2, \
+                                , ,41,52,31,37,47,55, \
+                                , ,30,40,51,45,33,48, \
+                                , ,44,49,39,56,34,53, \
+                                , ,46,42,50,36,29,32
         PERMUTATION_END
 
         dec     ecx
@@ -665,7 +665,7 @@ kinit ENDP
 ;         of the halves.
 ;
 ;         Note: Some implementations vary the DES and right-rotate the key.
-;               For these applications just rewrite this routine to meet your
+;               For these application just rewrite this routine to meet your
 ;               specific needs.
 ;
 ;
@@ -772,15 +772,15 @@ AlgorithmNextBlock:
 ;
 ; 3) Expansion (E) table block:
 ;
-        PERMUTATION_START               OFFSET R_Block, OFFSET outBitField
-        PERMUTATION_BIT_MATRIX          , , 32,  1,  2,  3,  4,  5, \
-                                        , ,  4,  5,  6,  7,  8,  9, \
-                                        , ,  8,  9, 10, 11, 12, 13, \
-                                        , , 12, 13, 14, 15, 16, 17, \
-                                        , , 16, 17, 18, 19, 20, 21, \
-                                        , , 20, 21, 22, 23, 24, 25, \
-                                        , , 24, 25, 26, 27, 28, 29, \
-                                        , , 28, 29, 30, 31, 32,  1
+        PERMUTATION_START       OFFSET R_Block, OFFSET outBitField
+        PERMUTATION_BIT_MATRIX  , ,32, 1, 2, 3, 4, 5, \
+                                , , 4, 5, 6, 7, 8, 9, \
+                                , , 8, 9,10,11,12,13, \
+                                , ,12,13,14,15,16,17, \
+                                , ,16,17,18,19,20,21, \
+                                , ,20,21,22,23,24,25, \
+                                , ,24,25,26,27,28,29, \
+                                , ,28,29,30,31,32, 1
         PERMUTATION_END
 
 
