@@ -1,1 +1,119 @@
+#******************************************************************************
+#
+#   Currently this project can be maintained, compiled and assembled with the
+#   following NMAKE makefile script:
+#
+#  ##########################  START OF MAKEFILE  ############################
+#
+# This is a NMake file for the Project: DESBIO.EXE                01.10.1994 H.A.
+#                                                                 23.04.2021 ha
+#                 ----------------------------------
+#                | Invocation:  NMAKE DESBIO.NMK    |
+#                 ----------------------------------
+#
+#        C:\Program Files (x86)\Microsoft Visual Studio\2010\BuildTools: XP SP3
+#        Microsoft (R) Macro Assembler Version 14.28.29910.0
+#        Microsoft (R) C/C++-Optimierungscompiler Version 16.00.30319.01 for x86 XP
+#        Microsoft (R) Incremental Linker Version 10.00.30319.01
+#        Microsoft (R) Program Maintenance Utility, Version 10.00.30319.01
+#
+#        C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools:
+#        Microsoft (R) Macro Assembler Version 14.28.29910.0
+#        Microsoft (R) C/C++-Optimierungscompiler Version 19.28.29910 for x86
+#        Microsoft (R) Incremental Linker Version 14.28.29910.0
+#        Microsoft (R) Program Maintenance Utility, Version 14.28.29910.0
+#
+# Product: DESbio.EXE                                                          
+# Module: desbio.NMK                                                        
+#
+#  ---------------------------------------------------------------------------
+# |                  Copyright (c)2021 by ha.                                 |
+# |     This program contains proprietary and confidential information.       |
+# | All rights reserved, except as may be permitted by prior written consent. |
+#  ---------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+#                                                                                           |
+# Usage of Visual Studio 2010 x86 Native Build Tools Command Prompt for Windows XP          |       
+# 1) Define a folder where the source resides                                               |
+#     (e.g. c:\Temp600\__\_\_\*.nmk, *.asm, *.cpp, *.obj, *.exe, *.lst *.lnk, ..)           |
+# 2) Edit the path to all sourcefile (fully qualified pathnames) in the *.NMK control file. |
+# 3) Start menu -> Developer Command Prompt for VS 2010 WinXP                               |
+# 3a) New Tools: Start menu -> Visual C++ 2019 x86 Native Build Tools Command Prompt Win10  |
+# 4) Run the command: "NMAKE C:\Temp600\__\_\_\desbio.nmk"                                  |
+# 5) The NMAKE-project will be built correctly                                              |
+#                                                                                           |
+# Usage of Visual C++ 2019 x86 Native Build Tools Command Prompt                            |
+# 1) Define a folder where the source resides                                               |
+#     (e.g. c:\Temp600\__\_\_\*.nmk, *.asm, *.cpp, *.obj, *.exe, *.lst *.lnk, ..)           |
+# 2) Edit the path to all sourcefile (fully qualified pathnames) in the *.NMK control file. |
+# 3) Start menu -> Developer Command Prompt for VS 2019 (2)                                 |
+# 3a) Older Tools: Start menu -> Visual Studio 2010 x86 Tools Command Prompt (for XP SP3)   |
+# 4) Run the command: "NMAKE C:\Temp600\__\_\_\desbio.nmk"                                  |
+# 5) The NMAKE-project will be built correctly                                              |
+#                                                                                           |
+#-------------------------------------------------------------------------------------------
 
+PROJ = DESbio           # The PARADIGM ASM module
+
+FOLDER = C:\Temp600\__\ # Folder prefix to the project, using MS Build-tools
+
+AFLAGS=/nologo /c /Sn /Sg /Sp84 /Fl
+#CFLAGS=/c /nologo /Gs /O2 /MT /Zi /Fades.as
+CFLAGS=/c /nologo /Gs /O2 /MT /EHsc
+LFLAGS=
+
+# Visual Studio 2019 Commandline for C++ compiler (Copy for 64bit .exe)
+# CFLAGS=/permissive- /ifcOutput "x64\Release\" /GS /GL /W3 /Gy /Zc:wchar_t /Gm- /O2 /sdl /Fd"x64\Release\vc142.pdb" /Zc:inline /fp:precise /D "NDEBUG" /D "_CONSOLE" /D "_UNICODE" /D "UNICODE" /errorReport:prompt /WX- /Zc:forScope /Gd /Oi /MT /FC /Fa"x64\Release\" /EHsc /nologo /Fo"x64\Release\" /Ot /Fp"x64\Release\ConsoleApplication3.pch" /diagnostics:column  desmain.cpp
+
+
+# -------------------------------------------------------
+# MACRO DEFINITIONS OF THE BIOS OBJECT MODULE DEPEDENCIES
+# -------------------------------------------------------
+OBJECTS= $(FOLDER)$(PROJ)main.obj $(FOLDER)$(PROJ).obj
+
+# --------------
+# INFERENCE RULE
+# --------------
+.asm.obj:
+        @ML $(AFLAGS) /Fo$(FOLDER)$(@B).obj /Fl$(FOLDER)$(@B).lst $(FOLDER)$(@B).asm
+
+.cpp.obj:
+        @CL $(CFLAGS) /Fo$(FOLDER)$(@B).obj $(FOLDER)$(@B).cpp
+
+
+# ------------------------------------------
+# PSEUDO TARGET POINTING TO THE REAL TARGETS
+# ------------------------------------------
+_all:   $(FOLDER)$(PROJ).exe
+
+# ---------------
+# PROJECT TARGETS
+# ---------------
+##$(PROJ)DOS.obj:          $(@B).c              # Main program (DOS bio interface)
+
+$(FOLDER)$(PROJ)main.obj:  $(FOLDER)$(@B).cpp   # Main program (Windows interface)
+
+$(FOLDER)$(PROJ).obj:      $(FOLDER)$(@B).asm   # Additionaly the .ASM module
+
+#------------------------------------------------------------------------------
+#                       $(PROJ) TARGET BUILD
+#------------------------------------------------------------------------------
+$(FOLDER)$(PROJ).exe:   $(OBJECTS)
+#       LINK $(LFLAGS)  /OUT:$@ $(OBJECTS) >$(FOLDER)$(@B).link
+#
+# Set a flag in a nmake Makefile if the cl compiler version is 16.
+# Note that cl /? prints the version information to the standard error stream
+#  and the help text to the standard output.
+#  To be able to check the version with the findstr command one must first
+#  redirect stderr to stdout using 2>&1.
+# 
+!IF ([cl 2>&1 | findstr /C:"Version 16" > nul] == 0)
+#FLAG = "cl version 16"                # For XP and Win10
+        LINK $(LFLAGS)  /OUT:$@ $(OBJECTS) >$(FOLDER)$(@B).link
+!ELSE
+#FLAG = "cl version 19"                # For > Win10 only
+        LINK $(LFLAGS)  /OUT:$(FOLDER)$(@B)_W10.exe $(OBJECTS) >$(FOLDER)$(@B).link
+!ENDIF
+        @ECHO " $(FOLDER)$(@B).exe has been built."
+
+# -----------------------------  END OF MAKEFILE  -----------------------------
