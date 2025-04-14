@@ -1,0 +1,3 @@
+source/*.nmk linguist-documentation
+source/*.cpp linguist-documentation
+source/*.exe linguist-generated
